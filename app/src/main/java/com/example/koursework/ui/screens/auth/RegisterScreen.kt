@@ -154,8 +154,8 @@ fun RegisterScreen(navController: NavController) {
             colors = ButtonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 disabledContainerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.background,
-                disabledContentColor = MaterialTheme.colorScheme.background
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary
             ),
             modifier = Modifier.width(150.dp).constrainAs(registerButtonRef) {
                 bottom.linkTo(parent.bottom, margin = 32.dp)
@@ -177,7 +177,9 @@ fun RegisterScreen(navController: NavController) {
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.background
+                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary
             ),
             modifier = Modifier.width(150.dp).constrainAs(loginButtonRef) {
                 bottom.linkTo(parent.bottom, margin = 32.dp)
