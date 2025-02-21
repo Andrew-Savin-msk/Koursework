@@ -77,7 +77,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Информация о салоне",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.constrainAs(titleRef) {
                         top.linkTo(parent.top)
@@ -88,7 +88,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Адрес:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.constrainAs(addressTitleRef) {
                         top.linkTo(titleRef.bottom, margin = 5.dp)
@@ -99,7 +99,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Огородный проезд, 1Ас5",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(addressTextRef) {
                         top.linkTo(addressTitleRef.bottom, margin = 4.dp)
                         start.linkTo(parent.start)
@@ -109,7 +109,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Время работы:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.constrainAs(workTimeTitleRef) {
                         top.linkTo(addressTextRef.bottom, margin = 5.dp)
@@ -120,7 +120,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Будние дни: 10:00 - 22:00\nСуббота: 10:00 - 20:00\nВоскресенье - выходной",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(workTimeTextRef) {
                         top.linkTo(workTimeTitleRef.bottom, margin = 4.dp)
                         start.linkTo(parent.start)
@@ -172,7 +172,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Контактные данные",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.constrainAs(contactTitleRef) {
                         top.linkTo(parent.top)
@@ -183,7 +183,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Номер менеджера: +7 (900) 000 00 00",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(phoneRef) {
                         top.linkTo(contactTitleRef.bottom, margin = 8.dp)
                         start.linkTo(parent.start)
@@ -193,7 +193,7 @@ fun AdditionalScreen() {
                 Text(
                     text = "Почта салона: saloooon@gmail.com",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(emailRef) {
                         top.linkTo(phoneRef.bottom, margin = 4.dp)
                         start.linkTo(parent.start)
@@ -205,7 +205,7 @@ fun AdditionalScreen() {
         Button(
             onClick = {
                 // TODO: Очистка стейта пользователя
-
+                AppState.logOut()
                 val intent = Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
