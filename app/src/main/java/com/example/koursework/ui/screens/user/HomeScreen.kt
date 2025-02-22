@@ -92,7 +92,6 @@ fun HomeScreen(viewModel: CarViewModel = CarViewModel()) {
         },
         modifier = Modifier.fillMaxWidth()
     ) { paddingValues ->
-        // Пример простой фильтрации на лету
         val filteredCars = cars.filter { car ->
             car.name.contains(searchQuery, ignoreCase = true)
         }
@@ -104,7 +103,7 @@ fun HomeScreen(viewModel: CarViewModel = CarViewModel()) {
         ) {
             CarList(
                 cars = filteredCars,
-                onDeleteCar = { car -> viewModel.deleteCar(car) },
+                onDeleteCar = {},
                 buttonText = "Сохранить"
             )
         }

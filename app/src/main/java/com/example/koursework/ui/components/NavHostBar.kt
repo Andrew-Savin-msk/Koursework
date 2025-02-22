@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Queue
+import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -85,7 +87,7 @@ fun HomeScreenPreview() {
 
         val navItems = listOf(
             NavItem(route = "List", icon = Icons.Default.DirectionsCar, label = "Каталог"),
-            NavItem(route = "Favorite", icon = Icons.Default.FavoriteBorder, label = "Отмеченное"),
+            NavItem(route = "Favorite", icon = Icons.Default.RemoveRedEye, label = "Отмеченное"),
             NavItem(route = "Additional", icon = Icons.Default.Stars, label = "Дополнительно")
         )
 

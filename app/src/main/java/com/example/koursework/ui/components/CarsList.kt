@@ -19,11 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.ViewModel
-import com.example.koursework.ui.theme.MyAppTheme
 
 data class Car(
     val id: String,
@@ -71,7 +69,6 @@ fun CarCard(
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Создаем ссылку для карточки внутри ConstraintLayout
         val (cardRef) = createRefs()
 
         Card(
@@ -81,8 +78,6 @@ fun CarCard(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    // При необходимости можно задать и нижнюю связь
-                    // bottom.linkTo(parent.bottom)
                 },
             colors = CardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -93,7 +88,6 @@ fun CarCard(
             elevation = CardDefaults.cardElevation(),
             shape = MaterialTheme.shapes.small,
         ) {
-            // Внутри карточки можно использовать ConstraintLayout или другой компоновщик (например, Column)
             ConstraintLayout(
                 modifier = Modifier
                     .wrapContentHeight()
@@ -104,7 +98,7 @@ fun CarCard(
                 val (imageRef, textName, textPrice, textFuel, textSeats, textCO2, buttonRef) = createRefs()
 
                 Image(
-                    painter = painterResource(id = R.drawable.road),
+                    painter = painterResource(id = R.drawable.porshe_911),
                     contentDescription = "Изображение автомобиля",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

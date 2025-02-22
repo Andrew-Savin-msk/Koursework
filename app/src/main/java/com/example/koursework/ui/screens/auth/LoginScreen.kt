@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.koursework.ManagerActivity
 import com.example.koursework.UserActivity
 import com.example.koursework.ui.theme.MyAppTheme
 
@@ -128,8 +129,14 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                val intent = Intent(context, UserActivity::class.java)
-                context.startActivity(intent)
+                if (email == "1") {
+                    val intent = Intent(context, UserActivity::class.java)
+                    context.startActivity(intent)
+                } else {
+                    val intent = Intent(context, ManagerActivity::class.java)
+                    context.startActivity(intent)
+                }
+
             },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
