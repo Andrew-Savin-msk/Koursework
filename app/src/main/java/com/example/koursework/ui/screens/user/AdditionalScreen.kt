@@ -18,8 +18,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,9 +32,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.koursework.MainActivity
 import com.example.koursework.ui.theme.MyAppTheme
 import com.example.koursework.R
-import com.example.koursework.UserActivity
 import com.example.koursework.ui.outbox.AppState
-import kotlinx.coroutines.MainScope
 
 
 @Composable
@@ -65,7 +61,7 @@ fun AdditionalScreen() {
         ) {
             ConstraintLayout(
                 modifier = Modifier
-                    .width(330.dp)
+                    .width(350.dp)
                     .wrapContentHeight()
                     .padding(8.dp)
             ) {
@@ -163,7 +159,7 @@ fun AdditionalScreen() {
         ) {
             ConstraintLayout(
                 modifier = Modifier
-                    .width(330.dp)
+                    .width(350.dp)
                     .wrapContentHeight()
                     .padding(8.dp)
             ) {
@@ -204,7 +200,6 @@ fun AdditionalScreen() {
 
         Button(
             onClick = {
-                // TODO: Очистка стейта пользователя
                 AppState.logOut()
                 val intent = Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -42,6 +42,7 @@ fun MyAppTheme(
     darkTheme: Boolean = AppState.isDarkTheme,
     content: @Composable () -> Unit
 ) {
+//    val colorScheme = LightColorScheme
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val systemUiController = rememberSystemUiController()
 

@@ -19,7 +19,7 @@ val ButtonTextLight = Color(0xffffffff)
 // Серый для тектовых полей и карточек авто
 val FocusedContentLight = Color(0xffeff0f1)
 
-val BoxGreyDark = Color(0xff313639)
+val BoxGreyDark = Color(0xFF313639)
 val TextGreyDark = Color(0xff79747e)
 val BackgroundDark = Color(0xff383d41)
 val TopBottomDark = Color(0xff79747e)
