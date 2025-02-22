@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ui.components.NavHostAndNavBar
 import com.example.koursework.ui.components.NavItem
+import com.example.koursework.ui.screens.manager.EditScreen
 import com.example.koursework.ui.screens.manager.ListScreen
 import com.example.koursework.ui.screens.manager.StatisticsScreen
 import com.example.koursework.ui.screens.user.AdditionalScreen
@@ -42,7 +43,7 @@ class ManagerActivity : AppCompatActivity() {
                     navHostContent = {
                         NavHost(navController = navController, startDestination = "Statistics") {
                             composable("List") { ListScreen() }
-                            composable("Edit") { CarScreen() }
+                            composable("Edit") { EditScreen() }
                             composable("Statistics") { StatisticsScreen() }
                         }
                     },

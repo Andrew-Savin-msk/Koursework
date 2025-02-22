@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -123,7 +124,6 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
             CarList(
                 cars = filteredCars,
                 onDeleteCar = {
-                    // При нажатии на кнопку в карточке открываем BottomSheet
                     isSheetOpen = true
                 },
                 buttonText = "Назначить покупателя"
@@ -169,6 +169,12 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
                             onClick = {
                                 isSheetOpen = false
                             },
+                            colors = ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .constrainAs(confirmButton) {
