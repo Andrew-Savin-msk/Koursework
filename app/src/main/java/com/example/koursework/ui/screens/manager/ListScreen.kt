@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.koursework.ui.components.AssignBuyerBottomSheet
 import com.example.koursework.ui.components.CarList
 import com.example.koursework.ui.components.CarViewModel
 import com.example.koursework.ui.theme.MyAppTheme
@@ -129,17 +130,57 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
             )
         }
 
-        // Если флаг включён, показываем шторку
         if (isSheetOpen) {
             AssignBuyerBottomSheet(
-                email = email,
-                onEmailChange = { email = it },
                 onCloseSheet = { isSheetOpen = false },
-                onConfirm = {
-                    // Тут можно вызвать логику из ViewModel:
-                    // viewModel.assignBuyerToCar(selectedCar, email)
-                    // Закрываем шторку
-                    isSheetOpen = false
+                sheetContent = {
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        // Создаем ссылки для управления позиционированием компонентов
+                        val (emailField, confirmButton) = createRefs()
+
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = {
+                                email = it
+                            },
+                            placeholder = { Text(text = "some@gmail.com", color = MaterialTheme.colorScheme.outline) },
+                            label = { Text(text = "Почта", color = MaterialTheme.colorScheme.outline) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .constrainAs(emailField) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                cursorColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.outline,
+                                unfocusedTextColor = MaterialTheme.colorScheme.outline,
+                            )
+                        )
+
+                        Button(
+                            onClick = {
+                                isSheetOpen = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .constrainAs(confirmButton) {
+                                    top.linkTo(emailField.bottom, margin = 24.dp)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text("Назначить")
+                        }
+                    }
                 }
             )
         }
@@ -153,112 +194,5 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
 fun HomeScreenPreview() {
     MyAppTheme {
         ListScreen()
-    }
-}
-
-// Modal window
-@Composable
-fun AssignBuyerDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit = {}
-) {
-    var email by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(text = "Назначить покупателя")
-        },
-        text = {
-            Column {
-                Text(text = "Введите email покупателя:")
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    placeholder = { Text("some@mail.com") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onConfirm(email)
-                }
-            ) {
-                Text("Назначить")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Отмена")
-            }
-        }
-    )
-}
-
-
-// SlidingCard
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AssignBuyerBottomSheet(
-    email: String,
-    onEmailChange: (String) -> Unit,
-    onCloseSheet: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
-    ModalBottomSheet(
-        onDismissRequest = onCloseSheet,
-        sheetState = sheetState,
-        shape = MaterialTheme.shapes.large,
-        containerColor = MaterialTheme.colorScheme.primaryContainer
-    ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // Создаем ссылки для управления позиционированием компонентов
-            val (emailField, confirmButton) = createRefs()
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = onEmailChange,
-                placeholder = { Text(text = "some@gmail.com", color = MaterialTheme.colorScheme.outline) },
-                label = { Text(text = "Почта", color = MaterialTheme.colorScheme.outline) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(emailField) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.outline,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    cursorColor = MaterialTheme.colorScheme.outline,
-                    focusedTextColor = MaterialTheme.colorScheme.outline,
-                    unfocusedTextColor = MaterialTheme.colorScheme.outline,
-                )
-            )
-
-            Button(
-                onClick = onConfirm,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(confirmButton) {
-                        top.linkTo(emailField.bottom, margin = 24.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                shape = MaterialTheme.shapes.small
-            ) {
-                Text("Назначить")
-            }
-        }
     }
 }
