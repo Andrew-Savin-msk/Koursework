@@ -41,7 +41,7 @@ class ManagerActivity : AppCompatActivity() {
                 NavHostAndNavBar(
                     navController = navController,
                     navHostContent = {
-                        NavHost(navController = navController, startDestination = "Statistics") {
+                        NavHost(navController = navController, startDestination = "List") {
                             composable("List") { ListScreen() }
                             composable("Edit") { EditScreen() }
                             composable("Statistics") { StatisticsScreen() }
