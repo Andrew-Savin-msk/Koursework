@@ -6,14 +6,21 @@ import retrofit2.http.*
 
 interface ApiService {
 
+    // --- USERS ---
     @GET("/users")
     suspend fun getAllUsers(): List<UserDto>
 
-    @POST("/users/register")
-    suspend fun register(@Body user: UserDto): Response<UserDto>
+    @GET("/users/{id}")
+    suspend fun getUserById(@Path("id") id: Long): UserDto
 
-    @POST("/users/login")
-    suspend fun login(@Body user: UserDto): Response<UserDto>
+    @POST("/users")
+    suspend fun createUser(@Body user: UserDto): Response<UserDto>
+
+    @PUT("/users/{id}")
+    suspend fun updateUser(@Path("id") id: Long, @Body user: UserDto): Response<UserDto>
+
+    @DELETE("/users/{id}")
+    suspend fun deleteUser(@Path("id") id: Long): Response<Void>
 
     @GET("/porshe/cars")
     suspend fun getAllCars(): List<PorsheCarDto>
