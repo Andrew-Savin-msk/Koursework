@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.koursework.data.model.UserDto
 import com.example.koursework.data.remote.repository.UserRepository
+import com.example.koursework.ui.outbox.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,16 +34,22 @@ class UserViewModel : ViewModel() {
                 val users = repository.getAllUsers()
                 val match = users.find { it.email == email && it.password == password }
                 _loginResult.value = if (match != null) {
+                    AppState.logInUser(
+                        id = match.id ?: -1,
+                        email = match.email,
+                        password = match.password,
+                        isAdmin = match.role.lowercase() == "admin"
+                    )
                     LoginResult(true, "")
                 } else {
                     LoginResult(false, "Неправильная почта или пароль")
                 }
             } catch (e: IOException) {
                 Log.e("Login", "Ошибка сети", e)
-                _loginResult.value = LoginResult(false, "Проверьте подключение к интернету")
+                _loginResult.value = LoginResult(false, "Проверьте интернет")
             } catch (e: Exception) {
                 Log.e("Login", "Неизвестная ошибка", e)
-                _loginResult.value = LoginResult(false, "Ошибка на сервере")
+                _loginResult.value = LoginResult(false, "Ошибка сервера")
             } finally {
                 _isLoading.value = false
             }

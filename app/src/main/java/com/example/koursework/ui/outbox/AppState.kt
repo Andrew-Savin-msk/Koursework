@@ -1,6 +1,7 @@
 package com.example.koursework.ui.outbox
 
 data class User(
+    val id: Long = -1,
     val email: String = "",
     val password: String = "",
     val isAdmin: Boolean = false,
@@ -15,8 +16,9 @@ object AppState {
         isDarkTheme = !isDarkTheme
     }
 
-    fun logInUser(email: String, password: String, isAdmin: Boolean) {
+    fun logInUser(id: Long, email: String, password: String, isAdmin: Boolean) {
         user = User(
+            id = id,
             email = email,
             password = password,
             isAdmin = isAdmin,
@@ -24,8 +26,9 @@ object AppState {
         )
     }
 
+    fun getUser(): User? = user
+
     fun logOut() {
         user = null
     }
 }
-
