@@ -1,39 +1,75 @@
 package com.example.koursework.ui.screens.auth
 
 import android.content.Intent
-import androidx.compose.ui.tooling.preview.Preview
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ManagerActivity
 import com.example.koursework.UserActivity
 import com.example.koursework.ui.theme.MyAppTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val viewModel: UserViewModel = viewModel()
 
-    ConstraintLayout (
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val loginState by viewModel.loginResult.collectAsState()
+
+    LaunchedEffect(loginState) {
+        loginState?.let { result ->
+            when {
+                result.success -> {
+                    Toast.makeText(context, "Успешный вход", Toast.LENGTH_SHORT).show()
+                    delay(300) // плавный переход
+                    val intent = if (email == "1") {
+                        Intent(context, UserActivity::class.java)
+                    } else {
+                        Intent(context, ManagerActivity::class.java)
+                    }
+                    context.startActivity(intent)
+                }
+                result.message.isNotBlank() -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        val (cardRef, registerButtonRef, loginButtonRef) = createRefs()
+        val (cardRef, registerButtonRef, loginButtonRef, loaderRef) = createRefs()
+
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(loaderRef) {
+                        top.linkTo(parent.top, margin = 150.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+        }
 
         Card(
             modifier = Modifier
@@ -129,14 +165,11 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                if (email == "1") {
-                    val intent = Intent(context, UserActivity::class.java)
-                    context.startActivity(intent)
+                if (email.isBlank() || password.isBlank()) {
+                    Toast.makeText(context, "Введите почту и пароль", Toast.LENGTH_SHORT).show()
                 } else {
-                    val intent = Intent(context, ManagerActivity::class.java)
-                    context.startActivity(intent)
+                    viewModel.login(email, password)
                 }
-
             },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
