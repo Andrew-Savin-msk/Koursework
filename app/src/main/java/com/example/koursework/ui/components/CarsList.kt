@@ -14,6 +14,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateListOf
+import android.graphics.BitmapFactory
+import android.util.Base64
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -22,6 +25,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.example.koursework.data.model.PorsheCarDto
+import com.example.koursework.data.remote.repository.CarRepository
+import kotlinx.coroutines.launch
+import java.text.DecimalFormat
+import android.widget.Toast
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.koursework.data.remote.repository.FavoriteRepository
+import com.example.koursework.ui.outbox.AppState
 
 data class Car(
     val id: String,
@@ -29,21 +43,61 @@ data class Car(
     val price: String,
     val fuelConsumption: String,
     val seats: Int,
-    val co2: String
+    val co2: String,
+    val imageBase64: String? = null
 )
 
 class CarViewModel : ViewModel() {
+    private val favoriteRepository = FavoriteRepository()
+    private val repository = CarRepository()
+
     private val _cars = mutableStateListOf<Car>()
     val cars: List<Car> = _cars
 
     init {
-        _cars.addAll(
-            listOf(
-                Car("1", "Porsche Cayman", "777 777", "10 л/100км", 4, "247-201"),
-                Car("2", "Toyota Camry", "2 000 000", "8 л/100км", 5, "150-180"),
-                Car("3", "BMW M3", "5 000 000", "12 л/100км", 4, "230-260")
-            )
-        )
+        loadCarsFromApi()
+    }
+
+    fun addToFavorites(car: Car, onResult: (Boolean) -> Unit = {}) {
+        val userId = AppState.getUser()?.id ?: return onResult(false)
+        viewModelScope.launch {
+            try {
+                val response = favoriteRepository.createFavorite(userId, car.id.toLong())
+                if (response.isSuccessful) {
+                    onResult(true)
+                } else {
+                    Log.e("AddFavorite", "Ошибка: ${response.errorBody()?.string()}")
+                    onResult(false)
+                }
+            } catch (e: Exception) {
+                Log.e("AddFavorite", "Ошибка запроса", e)
+                onResult(false)
+            }
+        }
+    }
+
+    fun loadCarsFromApi() {
+        viewModelScope.launch {
+            try {
+                val dtoList = repository.getAllCars()
+                val formatted = dtoList.map { dto -> dto.toCar() }
+                _cars.clear()
+                _cars.addAll(formatted)
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Ошибка загрузки машин: ${e.message}", e)
+            }
+        }
+    }
+
+    fun deleteCar(car: Car) {
+        viewModelScope.launch {
+            try {
+                repository.deleteCar(car.id.toLong())
+                _cars.remove(car)
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Ошибка удаления: ${e.message}", e)
+            }
+        }
     }
 
     fun updateCars(newCars: List<Car>) {
@@ -51,8 +105,17 @@ class CarViewModel : ViewModel() {
         _cars.addAll(newCars)
     }
 
-    fun deleteCar(car: Car) {
-        _cars.remove(car)
+    private fun PorsheCarDto.toCar(): Car {
+        val priceFormatter = DecimalFormat("#,###.##")
+        return Car(
+            id = this.id?.toString() ?: "",
+            name = this.name,
+            price = priceFormatter.format(this.price),
+            fuelConsumption = "${this.consumption} л/100км",
+            seats = this.seats,
+            co2 = "${this.co2} г/км",
+            imageBase64 = this.image// если image в DTO — ByteArray
+        )
     }
 }
 
@@ -63,6 +126,16 @@ fun CarCard(
     modifier: Modifier = Modifier,
     buttonText: String,
 ) {
+    val bitmap = remember(car.imageBase64) {
+        car.imageBase64?.let {
+            try {
+                val decodedBytes = Base64.decode(it, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -97,19 +170,36 @@ fun CarCard(
             ) {
                 val (imageRef, textName, textPrice, textFuel, textSeats, textCO2, buttonRef) = createRefs()
 
-                Image(
-                    painter = painterResource(id = R.drawable.porshe_911),
-                    contentDescription = "Изображение автомобиля",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .constrainAs(imageRef) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                )
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Изображение автомобиля",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .constrainAs(imageRef) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.porshe_911),
+                        contentDescription = "Изображение автомобиля",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .constrainAs(imageRef) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                    )
+                }
+
 
                 Text(
                     text = car.name,

@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import android.widget.Toast
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +28,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.koursework.ui.components.CarList
@@ -36,6 +38,7 @@ import com.example.koursework.ui.theme.MyAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: CarViewModel = CarViewModel()) {
+    val context = LocalContext.current
     val cars = viewModel.cars
 
     // Стейт для поискового запроса
@@ -103,7 +106,11 @@ fun HomeScreen(viewModel: CarViewModel = CarViewModel()) {
         ) {
             CarList(
                 cars = filteredCars,
-                onDeleteCar = {},
+                onDeleteCar = { car ->
+                    viewModel.addToFavorites(car) { success ->
+                        val message = if (success) "Добавлено в избранное" else "Не удалось добавить"
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }},
                 buttonText = "Сохранить"
             )
         }
