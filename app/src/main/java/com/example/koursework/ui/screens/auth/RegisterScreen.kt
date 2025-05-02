@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -24,28 +25,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ui.theme.MyAppTheme
 
 @Composable
 fun RegisterScreen(navController: NavController) {
-    // Локальные стейты для ввода почты и пароля
+    val context = LocalContext.current
+    val viewModel: UserViewModel = viewModel()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordRep by remember { mutableStateOf("") }
-    val context = LocalContext.current
 
-    // ConstraintLayout на весь экран
-    ConstraintLayout (
+    val isLoading by viewModel.isLoading.collectAsState()
+    val registerResult by viewModel.registerResult.collectAsState()
+
+    LaunchedEffect(registerResult) {
+        registerResult?.let { result ->
+            if (result.success) {
+                Toast.makeText(context, "Вы успешно зарегистрировались", Toast.LENGTH_SHORT).show()
+                navController.navigate("LoginScreen") {
+                    popUpTo("RegisterScreen") { inclusive = true }
+                }
+            } else if (result.message.isNotBlank()) {
+                Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // Задаём общий фон
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        // Создаём "якоря" (Refs) для размещения элементов
-        val (cardRef, emailRef, passwordRef, registerButtonRef, loginButtonRef) = createRefs()
+        val (cardRef, registerButtonRef, loginButtonRef, loaderRef) = createRefs()
 
-        // Карточка, в которой расположены поля ввода
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(loaderRef) {
+                        top.linkTo(parent.top, margin = 150.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+        }
+
         Card(
             modifier = Modifier
                 .height(300.dp)
@@ -162,17 +189,20 @@ fun RegisterScreen(navController: NavController) {
                 start.linkTo(parent.start, margin = 32.dp)
             }
         ) {
-            Text(text = "Ко входу")
+            Text("Ко входу")
         }
 
         Button(
             onClick = {
-                /// TODO обработка пользователя
-                navController.navigate("LoginScreen") {
-                    popUpTo("RegisterScreen") { inclusive = true }
-                }
+                when {
+                    email.isBlank() || password.isBlank() || passwordRep.isBlank() ->
+                        Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
 
-                Toast.makeText(context, "Вы успешно зарегестрировались!", Toast.LENGTH_SHORT).show()
+                    password != passwordRep ->
+                        Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
+
+                    else -> viewModel.register(email, password)
+                }
             },
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
