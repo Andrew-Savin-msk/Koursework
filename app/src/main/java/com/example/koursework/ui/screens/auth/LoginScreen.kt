@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ManagerActivity
 import com.example.koursework.UserActivity
+import com.example.koursework.ui.outbox.AppState
 import com.example.koursework.ui.theme.MyAppTheme
 import kotlinx.coroutines.delay
 
@@ -39,10 +40,10 @@ fun LoginScreen(navController: NavController) {
                 result.success -> {
                     Toast.makeText(context, "Успешный вход", Toast.LENGTH_SHORT).show()
                     delay(300) // плавный переход
-                    val intent = if (email == "1") {
-                        Intent(context, UserActivity::class.java)
-                    } else {
+                    val intent = if (AppState.getUser()!!.isAdmin) {
                         Intent(context, ManagerActivity::class.java)
+                    } else {
+                        Intent(context, UserActivity::class.java)
                     }
                     context.startActivity(intent)
                 }
