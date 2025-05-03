@@ -120,6 +120,71 @@ class CarViewModel : ViewModel() {
             imageBase64 = this.image// если image в DTO — ByteArray
         )
     }
+
+    fun createCar(
+        name: String,
+        price: String,
+        description: String?,
+        imageBase64: String?,
+        consumption: String,
+        seats: String,
+        co2: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val dto = PorsheCarDto(
+                    name = name,
+                    price = price.toBigDecimal(),
+                    image = imageBase64,
+                    description = description,
+                    consumption = consumption.toBigDecimal(),
+                    seats = seats.toInt(),
+                    co2 = co2.toBigDecimal()
+                )
+                val response = repository.createCar(dto)
+                onResult(response.isSuccessful)
+                if (response.isSuccessful) loadCarsFromApi()
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Ошибка при создании автомобиля", e)
+                onResult(false)
+            }
+        }
+    }
+
+    fun updateCar(
+        id: Long,
+        name: String,
+        price: String,
+        description: String?,
+        imageBase64: String?,
+        consumption: String,
+        seats: String,
+        co2: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val dto = PorsheCarDto(
+                    id = id,
+                    name = name,
+                    price = price.toBigDecimal(),
+                    image = imageBase64,
+                    description = description,
+                    consumption = consumption.toBigDecimal(),
+                    seats = seats.toInt(),
+                    co2 = co2.toBigDecimal()
+                )
+                val response = repository.updateCar(id, dto)
+                onResult(response.isSuccessful)
+                if (response.isSuccessful) loadCarsFromApi()
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Ошибка при обновлении автомобиля", e)
+                onResult(false)
+            }
+        }
+    }
+
 }
 
 

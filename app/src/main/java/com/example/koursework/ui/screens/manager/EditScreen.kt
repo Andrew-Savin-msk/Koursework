@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
 import com.example.koursework.ui.components.AssignBuyerBottomSheet
+import com.example.koursework.ui.components.Car
 import com.example.koursework.ui.components.CarList
 import com.example.koursework.ui.components.CarViewModel
 import com.example.koursework.ui.outbox.SearchHistoryManager
@@ -90,6 +91,7 @@ fun EditScreen(viewModel: CarViewModel = CarViewModel()) {
     var errorOccurred by remember { mutableStateOf(false) }
     var history by remember { mutableStateOf(SearchHistoryManager.getHistory(context)) }
     var showHistory by remember { mutableStateOf(false) }
+    var carToEdit by remember { mutableStateOf<Car?>(null) }
 
     val cars = viewModel.cars
     val filteredCars = if (searchQuery.text.isEmpty()) cars else cars.filter {
@@ -101,6 +103,15 @@ fun EditScreen(viewModel: CarViewModel = CarViewModel()) {
     var price by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    fun resetForm() {
+        brandAndModel = ""
+        price = ""
+        description = ""
+        selectedImageUri = null
+        carToEdit = null
+        isSheetOpen = false
+    }
 
     // Функция для получения имени файла из Uri
     fun getFileNameFromUri(context: Context, uri: Uri): String {
@@ -213,7 +224,17 @@ fun EditScreen(viewModel: CarViewModel = CarViewModel()) {
         // Добавляем "плавающую" кнопку
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { isSheetOpen = true },
+                onClick = {
+                    carToEdit = null
+
+                    // Очищаем форму
+                    brandAndModel = ""
+                    price = ""
+                    description = ""
+                    selectedImageUri = null
+
+                    isSheetOpen = true
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
@@ -338,12 +359,16 @@ fun EditScreen(viewModel: CarViewModel = CarViewModel()) {
                     CarList(
                         cars = filteredCars,
                         onDeleteCar = { car ->
-                            viewModel.addToFavorites(car) { success ->
-                                val msg = if (success) "Добавлено в избранное" else "Не удалось добавить"
-                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                            }
+                            // 🔽 ЗДЕСЬ МЫ ПЕРЕХОДИМ В РЕЖИМ РЕДАКТИРОВАНИЯ
+                            carToEdit = car
+                            brandAndModel = car.name
+                            price = car.price.replace(" ", "").replace(",", "")
+                            description = "Здесь подставляется описание из БД, если есть"
+                            selectedImageUri = null // пока base64 не конвертируем
+
+                            isSheetOpen = true
                         },
-                        buttonText = "Сохранить"
+                        buttonText = "Редактировать"
                     )
 
                     // Наша нижняя шторка (BottomSheet)
@@ -511,11 +536,52 @@ fun EditScreen(viewModel: CarViewModel = CarViewModel()) {
 
                                     Button(
                                         onClick = {
-                                            if (selectedImageUri == null) {
-                                                Toast.makeText(context, "Пожалуйста, выберите фото", Toast.LENGTH_SHORT).show()
+                                            val name = brandAndModel.trim()
+                                            val priceStr = price.trim()
+                                            val desc = description.trim()
+                                            val base64Image = selectedImageUri?.let { uri ->
+                                                context.contentResolver.openInputStream(uri)?.use { stream ->
+                                                    android.util.Base64.encodeToString(stream.readBytes(), android.util.Base64.DEFAULT)
+                                                }
+                                            }
+
+                                            if (carToEdit == null) {
+                                                // ▶ Создание
+                                                viewModel.createCar(
+                                                    name = name,
+                                                    price = priceStr,
+                                                    description = desc,
+                                                    imageBase64 = base64Image,
+                                                    consumption = "10.0", // можно позже сделать поле
+                                                    seats = "4",
+                                                    co2 = "150.0"
+                                                ) { success ->
+                                                    if (success) {
+                                                        Toast.makeText(context, "Автомобиль добавлен", Toast.LENGTH_SHORT).show()
+                                                        resetForm()
+                                                    } else {
+                                                        Toast.makeText(context, "Не удалось добавить. Проверьте интернет", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
                                             } else {
-                                                Toast.makeText(context, "Данные сохранены", Toast.LENGTH_SHORT)
-                                                    .show()
+                                                // ▶ Редактирование
+                                                viewModel.updateCar(
+                                                    id = carToEdit!!.id.toLong(),
+                                                    name = name,
+                                                    price = priceStr,
+                                                    description = desc,
+                                                    imageBase64 = base64Image,
+                                                    consumption = "10.0",
+                                                    seats = "4",
+                                                    co2 = "150.0"
+                                                ) { success ->
+                                                    if (success) {
+                                                        Toast.makeText(context, "Изменения сохранены", Toast.LENGTH_SHORT).show()
+                                                        resetForm()
+                                                    } else {
+                                                        Toast.makeText(context, "Ошибка при сохранении. Повторите позже", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
                                             }
                                         },
                                         shape = MaterialTheme.shapes.small,
