@@ -12,9 +12,11 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Stars
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.koursework.ui.components.CarViewModel
 import com.example.koursework.ui.components.NavHostAndNavBar
 import com.example.koursework.ui.components.NavItem
 import com.example.koursework.ui.screens.manager.EditScreen
@@ -28,6 +30,7 @@ class ManagerActivity : AppCompatActivity() {
         setContent {
             MyAppTheme {
                 val navController = rememberNavController()
+                val carViewModel: CarViewModel = viewModel()
 
                 val navItems = listOf(
                     NavItem(route = "List", icon = Icons.Default.DirectionsCar, label = "Каталог"),
@@ -40,7 +43,7 @@ class ManagerActivity : AppCompatActivity() {
                     navHostContent = {
                         NavHost(navController = navController, startDestination = "List") {
                             composable("List") { ListScreen() }
-                            composable("Edit") { EditScreen() }
+                            composable("Edit") { EditScreen(viewModel = carViewModel) }
                             composable("Statistics") { StatisticsScreen() }
                         }
                     },
