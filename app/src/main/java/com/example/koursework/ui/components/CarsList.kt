@@ -34,8 +34,11 @@ import java.text.DecimalFormat
 import android.widget.Toast
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.example.koursework.data.model.PorsheFavoriteDto
 import com.example.koursework.data.remote.repository.FavoriteRepository
 import com.example.koursework.ui.outbox.AppState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class Car(
     val id: String,
@@ -118,6 +121,43 @@ class CarViewModel : ViewModel() {
         )
     }
 }
+
+
+class FavoritesViewModel : ViewModel() {
+    private val repository = FavoriteRepository()
+    private val _favorites = MutableStateFlow<List<PorsheFavoriteDto>>(emptyList())
+    val favorites = _favorites.asStateFlow()
+
+    init {
+        loadFavorites()
+    }
+
+    fun loadFavorites() {
+        viewModelScope.launch {
+            try {
+                val all = repository.getAllFavorites()
+                val userId = AppState.getUser()?.id
+                _favorites.value = all.filter { it.user.id == userId }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun deleteFavorite(favoriteId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = repository.deleteFavorite(favoriteId)
+                if (response.isSuccessful) {
+                    _favorites.value = _favorites.value.filterNot { it.id == favoriteId }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+}
+
 
 @Composable
 fun CarCard(

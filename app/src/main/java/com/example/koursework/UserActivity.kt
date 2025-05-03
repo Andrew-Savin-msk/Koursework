@@ -12,10 +12,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ui.components.CarViewModel
+import com.example.koursework.ui.components.FavoritesViewModel
 import com.example.koursework.ui.components.NavHostAndNavBar
 import com.example.koursework.ui.components.NavItem
 import com.example.koursework.ui.screens.user.AdditionalScreen
-import com.example.koursework.ui.screens.user.CarScreen
+import com.example.koursework.ui.screens.user.FavoritesScreen
 import com.example.koursework.ui.screens.user.HomeScreen
 import com.example.koursework.ui.theme.MyAppTheme
 
@@ -26,6 +27,7 @@ class UserActivity : AppCompatActivity() {
             MyAppTheme {
                 val navController = rememberNavController()
                 val carViewModel: CarViewModel = viewModel()
+                val favoriteViewModel: FavoritesViewModel = viewModel()
 
                 val navItems = listOf(
                     NavItem(route = "List", icon = Icons.Default.DirectionsCar, label = "Каталог"),
@@ -38,7 +40,7 @@ class UserActivity : AppCompatActivity() {
                     navHostContent = {
                         NavHost(navController = navController, startDestination = "List") {
                             composable("List") { HomeScreen(viewModel = carViewModel) }
-                            composable("Favorite") { CarScreen(viewModel = carViewModel) }
+                            composable("Favorite") { FavoritesScreen(viewModel = favoriteViewModel) }
                             composable("Additional") { AdditionalScreen() }
                         }
                     },

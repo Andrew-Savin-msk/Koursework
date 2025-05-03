@@ -21,7 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ui.screens.user.AdditionalScreen
-import com.example.koursework.ui.screens.user.CarScreen
+import com.example.koursework.ui.screens.user.FavoritesScreen
 import com.example.koursework.ui.screens.user.HomeScreen
 import com.example.koursework.ui.theme.MyAppTheme
 
@@ -96,7 +96,7 @@ fun HomeScreenPreview() {
             navHostContent = {
                 NavHost(navController = navController, startDestination = "Additional", modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     composable("List") { HomeScreen() }
-                    composable("Favorite") { CarScreen() }
+                    composable("Favorite") { FavoritesScreen() }
                     composable("Additional") { AdditionalScreen() }
                 }
             },

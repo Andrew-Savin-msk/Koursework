@@ -20,9 +20,6 @@ import com.example.koursework.ui.components.NavItem
 import com.example.koursework.ui.screens.manager.EditScreen
 import com.example.koursework.ui.screens.manager.ListScreen
 import com.example.koursework.ui.screens.manager.StatisticsScreen
-import com.example.koursework.ui.screens.user.AdditionalScreen
-import com.example.koursework.ui.screens.user.CarScreen
-import com.example.koursework.ui.screens.user.HomeScreen
 import com.example.koursework.ui.theme.MyAppTheme
 
 class ManagerActivity : AppCompatActivity() {
