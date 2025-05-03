@@ -39,6 +39,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,15 +56,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.koursework.ui.components.AssignBuyerBottomSheet
+import com.example.koursework.ui.components.Car
 import com.example.koursework.ui.components.CarList
 import com.example.koursework.ui.components.CarViewModel
+import com.example.koursework.ui.components.SavedCarViewModel
 import com.example.koursework.ui.outbox.SearchHistoryManager
 import com.example.koursework.ui.theme.MyAppTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
+fun ListScreen(viewModel: CarViewModel = CarViewModel(), savedCarViewModel: SavedCarViewModel) {
     // Управление открытием/закрытием BottomSheet
     var isSheetOpen by remember { mutableStateOf(false) }
 
@@ -70,6 +74,19 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
     var email by remember { mutableStateOf("") }
 
     val context = LocalContext.current
+    val isSaved by savedCarViewModel.isSaved.collectAsState()
+    val saveError by savedCarViewModel.errorMessage.collectAsState()
+    var selectedCar by remember { mutableStateOf<Car?>(null) }
+
+
+    LaunchedEffect(isSaved, saveError) {
+        when (isSaved) {
+            true -> Toast.makeText(context, "Авто назначено!", Toast.LENGTH_SHORT).show()
+            false -> Toast.makeText(context, saveError ?: "Ошибка назначения", Toast.LENGTH_LONG).show()
+            else -> {} // null — ничего не делаем
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
     var searchQuery by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(
         TextFieldValue("")
@@ -280,6 +297,7 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
                     CarList(
                         cars = filteredCars,
                         onDeleteCar = { car ->
+                            selectedCar = car
                             isSheetOpen = true
                         },
                         buttonText = "Назначить"
@@ -322,6 +340,9 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
 
                                     Button(
                                         onClick = {
+                                            selectedCar?.let { car ->
+                                                savedCarViewModel.saveCar(email, car.id.toLong())
+                                            }
                                             isSheetOpen = false
                                         },
                                         colors = ButtonColors(
@@ -348,15 +369,5 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel()) {
                 }
             }
         }
-    }
-}
-
-
-
-@Preview(showBackground = true, name = "Home Screen Preview")
-@Composable
-fun HomeScreenPreview() {
-    MyAppTheme {
-        ListScreen()
     }
 }

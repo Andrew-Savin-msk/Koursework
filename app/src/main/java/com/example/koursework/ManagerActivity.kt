@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.koursework.ui.components.CarViewModel
 import com.example.koursework.ui.components.NavHostAndNavBar
 import com.example.koursework.ui.components.NavItem
+import com.example.koursework.ui.components.SavedCarViewModel
 import com.example.koursework.ui.screens.manager.EditScreen
 import com.example.koursework.ui.screens.manager.ListScreen
 import com.example.koursework.ui.screens.manager.StatisticsScreen
@@ -31,6 +32,8 @@ class ManagerActivity : AppCompatActivity() {
             MyAppTheme {
                 val navController = rememberNavController()
                 val carViewModel: CarViewModel = viewModel()
+                val savedCarViewModel: SavedCarViewModel = viewModel()
+
 
                 val navItems = listOf(
                     NavItem(route = "List", icon = Icons.Default.DirectionsCar, label = "Каталог"),
@@ -42,7 +45,7 @@ class ManagerActivity : AppCompatActivity() {
                     navController = navController,
                     navHostContent = {
                         NavHost(navController = navController, startDestination = "List") {
-                            composable("List") { ListScreen(viewModel = carViewModel) }
+                            composable("List") { ListScreen(viewModel = carViewModel, savedCarViewModel = savedCarViewModel) }
                             composable("Edit") { EditScreen(viewModel = carViewModel) }
                             composable("Statistics") { StatisticsScreen() }
                         }
