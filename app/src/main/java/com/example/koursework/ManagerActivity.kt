@@ -42,7 +42,7 @@ class ManagerActivity : AppCompatActivity() {
                     navController = navController,
                     navHostContent = {
                         NavHost(navController = navController, startDestination = "List") {
-                            composable("List") { ListScreen() }
+                            composable("List") { ListScreen(viewModel = carViewModel) }
                             composable("Edit") { EditScreen(viewModel = carViewModel) }
                             composable("Statistics") { StatisticsScreen() }
                         }
