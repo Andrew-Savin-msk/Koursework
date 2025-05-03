@@ -51,4 +51,7 @@ interface ApiService {
 
     @DELETE("/porshe/favorites/{id}")
     suspend fun deleteFavorite(@Path("id") id: Long): Response<Void>
+
+    @POST("/porshe/saved/by-email")
+    suspend fun saveCarByEmail(@Query("email") email: String, @Query("carId") carId: Long): Response<Void>
 }

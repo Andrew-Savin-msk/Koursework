@@ -36,9 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.koursework.data.model.PorsheFavoriteDto
 import com.example.koursework.data.remote.repository.FavoriteRepository
+import com.example.koursework.data.remote.repository.SavedCarRepository
 import com.example.koursework.ui.outbox.AppState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.IOException
 
 data class Car(
     val id: String,
@@ -223,6 +226,38 @@ class FavoritesViewModel : ViewModel() {
     }
 }
 
+class SavedCarViewModel : ViewModel() {
+    private val repository = SavedCarRepository()
+
+    private val _isSaved = MutableStateFlow<Boolean?>(null)
+    val isSaved: StateFlow<Boolean?> = _isSaved
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
+    fun saveCar(email: String, carId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = repository.saveCarByEmail(email, carId)
+                if (response.isSuccessful) {
+                    _isSaved.value = true
+                } else {
+                    Log.e("SavedCar", "Ошибка ${response.code()}")
+                    _errorMessage.value = "Не удалось сохранить авто"
+                    _isSaved.value = false
+                }
+            } catch (e: IOException) {
+                Log.e("SavedCar", "Ошибка сети", e)
+                _errorMessage.value = "Проблема с интернетом"
+                _isSaved.value = false
+            } catch (e: Exception) {
+                Log.e("SavedCar", "Ошибка запроса", e)
+                _errorMessage.value = "Произошла ошибка"
+                _isSaved.value = false
+            }
+        }
+    }
+}
 
 @Composable
 fun CarCard(
