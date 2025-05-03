@@ -54,7 +54,7 @@ fun AdditionalScreen() {
                     start.linkTo(parent.start, margin = 16.dp)
                     end.linkTo(parent.end, margin = 16.dp)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             )
@@ -152,7 +152,7 @@ fun AdditionalScreen() {
                     start.linkTo(parent.start, margin = 16.dp) // заменено с 10.dp на 16.dp
                     end.linkTo(parent.end, margin = 16.dp)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             )

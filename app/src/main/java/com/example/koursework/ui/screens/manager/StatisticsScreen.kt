@@ -66,7 +66,7 @@ fun StatisticsScreen() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
@@ -138,7 +138,7 @@ fun StatisticsScreen() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
@@ -182,7 +182,7 @@ fun StatisticsScreen() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             )
