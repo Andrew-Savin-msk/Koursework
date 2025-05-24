@@ -235,10 +235,10 @@ class SavedCarViewModel : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    fun saveCar(email: String, carId: Long) {
+    fun saveCar(email: String, carId: Long, managerId: Long) {
         viewModelScope.launch {
             try {
-                val response = repository.saveCarByEmail(email, carId)
+                val response = repository.saveCarByEmail(email, carId, managerId)
                 if (response.isSuccessful) {
                     _isSaved.value = true
                 } else {
@@ -254,6 +254,30 @@ class SavedCarViewModel : ViewModel() {
                 Log.e("SavedCar", "Ошибка запроса", e)
                 _errorMessage.value = "Произошла ошибка"
                 _isSaved.value = false
+            }
+        }
+    }
+
+    private val _dealCount = MutableStateFlow<Long?>(null)
+    val dealCount: StateFlow<Long?> = _dealCount
+
+    fun fetchDealCount(managerId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = repository.сountByManagerId(managerId)
+                if (response.isSuccessful) {
+                    _dealCount.value = response.body()!!.count
+                    _errorMessage.value = null
+                } else {
+                    _errorMessage.value = "Ошибка получения количества сделок: ${response.code()}"
+                    _dealCount.value = null
+                }
+            } catch (e: IOException) {
+                _errorMessage.value = "Проблемы с интернетом"
+                _dealCount.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка запроса"
+                _dealCount.value = null
             }
         }
     }

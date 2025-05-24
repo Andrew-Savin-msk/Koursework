@@ -60,6 +60,7 @@ import com.example.koursework.ui.components.Car
 import com.example.koursework.ui.components.CarList
 import com.example.koursework.ui.components.CarViewModel
 import com.example.koursework.ui.components.SavedCarViewModel
+import com.example.koursework.ui.outbox.AppState
 import com.example.koursework.ui.outbox.SearchHistoryManager
 import com.example.koursework.ui.theme.MyAppTheme
 import kotlinx.coroutines.launch
@@ -341,7 +342,7 @@ fun ListScreen(viewModel: CarViewModel = CarViewModel(), savedCarViewModel: Save
                                     Button(
                                         onClick = {
                                             selectedCar?.let { car ->
-                                                savedCarViewModel.saveCar(email, car.id.toLong())
+                                                savedCarViewModel.saveCar(email, car.id.toLong(), AppState.getUser()!!.id)
                                             }
                                             isSheetOpen = false
                                         },

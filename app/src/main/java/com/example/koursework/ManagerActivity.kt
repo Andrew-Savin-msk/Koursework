@@ -47,7 +47,7 @@ class ManagerActivity : AppCompatActivity() {
                         NavHost(navController = navController, startDestination = "List") {
                             composable("List") { ListScreen(viewModel = carViewModel, savedCarViewModel = savedCarViewModel) }
                             composable("Edit") { EditScreen(viewModel = carViewModel) }
-                            composable("Statistics") { StatisticsScreen() }
+                            composable("Statistics") { StatisticsScreen(savedCarViewModel = savedCarViewModel) }
                         }
                     },
                     navItems = navItems

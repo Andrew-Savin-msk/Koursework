@@ -53,5 +53,8 @@ interface ApiService {
     suspend fun deleteFavorite(@Path("id") id: Long): Response<Void>
 
     @POST("/porshe/saved/by-email")
-    suspend fun saveCarByEmail(@Query("email") email: String, @Query("carId") carId: Long): Response<Void>
+    suspend fun saveCarByEmail(@Query("email") email: String, @Query("carId") carId: Long, @Query("managerId") managerId: Long): Response<Void>
+
+    @GET("/porshe/saved/count-by-user")
+    suspend fun сountByManagerId(@Query("managerId") managerId: Long): Response<CountResponse>
 }

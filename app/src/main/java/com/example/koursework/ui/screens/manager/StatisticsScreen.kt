@@ -2,6 +2,8 @@ package com.example.koursework.ui.screens.manager
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,6 +21,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,14 +34,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.koursework.MainActivity
 import com.example.koursework.R
+import com.example.koursework.ui.components.SavedCarViewModel
 import com.example.koursework.ui.outbox.AppState
 import com.example.koursework.ui.theme.MyAppTheme
 
 
 @Composable
-fun StatisticsScreen() {
+fun StatisticsScreen(
+    savedCarViewModel: SavedCarViewModel
+) {
+
+    LaunchedEffect(AppState.getUser()!!.id) {
+        savedCarViewModel.fetchDealCount(AppState.getUser()!!.id)
+    }
+
+    val dealCount by savedCarViewModel.dealCount.collectAsState(initial = null)
+
+    Log.d("loginId", AppState.getUser()!!.id.toString())
+
     val context = LocalContext.current
 
     // Корневой ConstraintLayout
@@ -161,7 +178,7 @@ fun StatisticsScreen() {
                     }
                 )
                 Text(
-                    text = "Сделок: 4",
+                    text = "${dealCount ?: "Пока что сделок нет"}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(dealsCountRef) {
@@ -205,7 +222,7 @@ fun StatisticsScreen() {
                     }
                 )
                 Text(
-                    text = "30",
+                    text = "${dealCount ?: "Не продано"}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inverseSurface,
                     modifier = Modifier.constrainAs(soldCountRef) {
@@ -266,6 +283,6 @@ fun StatisticsScreen() {
 @Composable
 fun AdditionalPreview() {
     MyAppTheme {
-        StatisticsScreen()
+        StatisticsScreen(viewModel())
     }
 }
